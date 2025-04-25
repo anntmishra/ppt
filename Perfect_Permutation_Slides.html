@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfect Permutation - Hackathon Presentation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+        .slide {
+            display: none;
+            height: 100vh;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            opacity: 0;
+            transition: opacity 0.8s, transform 0.8s;
+        }
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 1;
+        }
+        .slide-content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: transform 0.8s ease-out, opacity 0.8s ease-out, box-shadow 0.3s;
+        }
+        .active .slide-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .slide-content:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        .title-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .title-slide .slide-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+            position: relative;
+            display: inline-block;
+        }
+        h1::after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 4px;
+            background: linear-gradient(90deg, #4caf50, transparent);
+            bottom: -10px;
+            left: 0;
+            transition: width 0.5s ease;
+        }
+        h1:hover::after {
+            width: 100%;
+        }
+        .title-slide h1 {
+            font-size: 4rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .title-slide h1::after {
+            background: linear-gradient(90deg, rgba(255,255,255,0.8), transparent);
+        }
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #444;
+            position: relative;
+            display: inline-block;
+        }
+        h2::after {
+            content: '';
+            position: absolute;
+            width: 30%;
+            height: 3px;
+            background: linear-gradient(90deg, #4caf50, transparent);
+            bottom: -5px;
+            left: 0;
+            transition: width 0.5s ease;
+        }
+        h2:hover::after {
+            width: 70%;
+        }
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .controls button {
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            transition: background 0.3s, transform 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .controls button:hover {
+            background: rgba(0, 0, 0, 0.4);
+            transform: scale(1.1);
+        }
+        pre, code {
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            padding: 0.5rem;
+            font-family: 'Courier New', Courier, monospace;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .highlight {
+            background-color: #fffacd;
+            padding: 0.2rem;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        .highlight:hover {
+            background-color: #ffeb3b;
+        }
+        .example-blocks {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            perspective: 1000px;
+        }
+        .example-block {
+            width: 60px;
+            height: 60px;
+            margin: 0 5px;
+            background-color: #4caf50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            border-radius: 8px;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .example-block:hover {
+            transform: translateY(-10px) rotateY(10deg);
+            box-shadow: 0 15px 20px rgba(0, 0, 0, 0.2);
+        }
+        .example-block::after {
+            content: attr(data-pos);
+            position: absolute;
+            bottom: -25px;
+            font-size: 12px;
+            color: #333;
+            transition: transform 0.3s;
+        }
+        .example-block:hover::after {
+            transform: scale(1.2);
+        }
+        .cost-table {
+            margin: 2rem auto;
+            width: 80%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .cost-table:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .cycle-illustration {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            border: 3px solid #4caf50;
+            margin: 2rem auto;
+            position: relative;
+            transition: transform 0.5s ease, box-shadow 0.5s;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            animation: pulse 2s infinite alternate;
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+            }
+            100% {
+                box-shadow: 0 0 0 20px rgba(76, 175, 80, 0);
+            }
+        }
+        .cycle-illustration:hover {
+            transform: rotate(45deg);
+        }
+        .cycle-node {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #4caf50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            font-weight: bold;
+            transition: transform 0.3s, background-color 0.3s;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+        .cycle-node:hover {
+            transform: scale(1.3);
+            background-color: #2e7d32;
+            z-index: 3;
+        }
+        /* Positions for cycle nodes */
+        .cycle-node:nth-child(1) {
+            top: 20px;
+            left: 105px;
+        }
+        .cycle-node:nth-child(2) {
+            top: 105px;
+            right: 20px;
+        }
+        .cycle-node:nth-child(3) {
+            bottom: 20px;
+            left: 105px;
+        }
+        .cycle-node:nth-child(4) {
+            top: 105px;
+            left: 20px;
+        }
+        .slide-number {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.5);
+            background: rgba(255, 255, 255, 0.5);
+            padding: 5px 10px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+        .team-info {
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+        .team-info:hover {
+            transform: scale(1.05);
+        }
+        .team-info h3 {
+            margin-bottom: 0.5rem;
+        }
+        .team-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .team-info li {
+            transition: transform 0.2s;
+            padding: 3px 0;
+        }
+        .team-info li:hover {
+            transform: translateX(10px);
+            color: #4caf50;
+        }
+        .problem-id {
+            margin-top: 1.5rem;
+            padding: 0.5rem 1rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: inline-block;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .problem-id:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        .card-header {
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        /* Particle background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        /* 3D Flip effect for cards */
+        .flip-card {
+            perspective: 1000px;
+            height: 100%;
+        }
+        .flip-card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            height: 100%;
+        }
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 15px;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #4caf50;
+            color: white;
+        }
+        /* Progress bar */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 5px;
+            z-index: 1000;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #2196f3, #9c27b0);
+            width: 0;
+            transition: width 0.3s;
+        }
+        /* Animated background gradients */
+        .animated-bg {
+            animation: gradientBG 15s ease infinite;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+        }
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        /* Custom slide transitions */
+        .slide-exit {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        .slide-enter {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        /* Theme switcher */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .theme-toggle:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+        /* Dark theme */
+        body.dark-theme .slide {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #f1f1f1;
+        }
+        body.dark-theme .slide-content {
+            background: #222;
+            color: #f1f1f1;
+        }
+        body.dark-theme h1, body.dark-theme h2 {
+            color: #f1f1f1;
+        }
+        body.dark-theme .card {
+            background-color: #333;
+            color: #f1f1f1;
+        }
+        body.dark-theme .card-body {
+            background-color: #333;
+            color: #f1f1f1;
+        }
+        /* Animated emoji */
+        .animated-emoji {
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles background -->
+    <div id="particles-js"></div>
+    
+    <!-- Progress bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    
+    <!-- Theme toggle -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Title Slide -->
+    <div class="slide title-slide animated-bg active" id="slide1">
+        <div class="slide-content animate__animated animate__fadeIn">
+            <h1 class="animate__animated animate__fadeInDown">The Perfect Permutation</h1>
+            <p class="subtitle animate__animated animate__fadeIn animate__delay-1s">Optimizing Permutation Sorting with Minimum Cost</p>
+            <div class="problem-id animate__animated animate__fadeInUp animate__delay-2s">Problem ID: BLA 106C-05</div>
+            
+            <div class="team-info animate__animated animate__fadeIn animate__delay-3s">
+                <h3><i class="fas fa-users"></i> Team 73</h3>
+                <ul>
+                    <li><i class="fas fa-user-circle"></i> Anant Mishra</li>
+                    <li><i class="fas fa-user-circle"></i> Abhinav Raghav</li>
+                    <li><i class="fas fa-user-circle"></i> Aryan Rawat</li>
+                    <li><i class="fas fa-user-circle"></i> Pranav Gupta</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Problem Statement -->
+    <div class="slide" id="slide2">
+        <div class="slide-content">
+            <h2><i class="fas fa-question-circle"></i> Problem Statement</h2>
+            <div class="row mt-4">
+                <div class="col-md-6 animate__animated animate__fadeInLeft animate__delay-1s">
+                    <p><strong>Given:</strong></p>
+                    <ul>
+                        <li class="animate__animated animate__fadeInLeft animate__delay-1s">A permutation of numbers from 1 to N</li>
+                        <li class="animate__animated animate__fadeInLeft animate__delay-1s">We need to sort it in ascending order</li>
+                        <li class="animate__animated animate__fadeInLeft animate__delay-2s">Only allowed operation: swap elements</li>
+                        <li class="animate__animated animate__fadeInLeft animate__delay-2s">Cost of a swap = <span class="highlight">|i-j|</span> (absolute difference of positions)</li>
+                    </ul>
+                    <p class="animate__animated animate__fadeInUp animate__delay-3s"><strong>Goal:</strong> Find the minimum total cost to sort the permutation.</p>
+                </div>
+                <div class="col-md-6 animate__animated animate__fadeInRight animate__delay-1s">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <i class="fas fa-code"></i> Example
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Input:</strong> [3, 1, 4, 2]</p>
+                            <div class="example-blocks">
+                                <div class="example-block animate__animated animate__bounceIn animate__delay-1s" data-pos="Position 1">3</div>
+                                <div class="example-block animate__animated animate__bounceIn animate__delay-2s" data-pos="Position 2">1</div>
+                                <div class="example-block animate__animated animate__bounceIn animate__delay-3s" data-pos="Position 3">4</div>
+                                <div class="example-block animate__animated animate__bounceIn animate__delay-4s" data-pos="Position 4">2</div>
+                            </div>
+                            <p class="animate__animated animate__fadeIn animate__delay-4s"><strong>Output:</strong> Minimum cost = 4</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Observation -->
+    <div class="slide" id="slide3">
+        <div class="slide-content">
+            <h2><i class="fas fa-lightbulb"></i> Key Observation: Cycle Decomposition</h2>
+            
+            <div class="row">
+                <div class="col-md-7 animate__animated animate__fadeInLeft">
+                    <p>Any permutation can be decomposed into <strong>cycles</strong>:</p>
+                    <ul>
+                        <li class="animate__animated animate__fadeInLeft animate__delay-1s">A cycle follows where each element should go</li>
+                        <li class="animate__animated animate__fadeInLeft animate__delay-1s">Each element wants to be in its "correct" position (its value)</li>
+                        <li class="animate__animated animate__fadeInLeft animate__delay-2s">Following this path forms cycles</li>
+                        <li class="animate__animated animate__fadeInLeft animate__delay-2s">Each cycle can be sorted independently</li>
+                    </ul>
+                    <p class="mt-3 animate__animated animate__fadeIn animate__delay-3s">For example, in [3, 1, 4, 2]:</p>
+                    <ul>
+                        <li class="animate__animated animate__fadeIn animate__delay-3s">Position 1 has value 3, which should be at position 3</li>
+                        <li class="animate__animated animate__fadeIn animate__delay-3s">Position 3 has value 4, which should be at position 4</li>
+                        <li class="animate__animated animate__fadeIn animate__delay-4s">Position 4 has value 2, which should be at position 2</li>
+                        <li class="animate__animated animate__fadeIn animate__delay-4s">Position 2 has value 1, which should be at position 1</li>
+                    </ul>
+                    <p class="animate__animated animate__fadeIn animate__delay-5s">This forms a cycle: 1 → 3 → 4 → 2 → 1</p>
+                </div>
+                <div class="col-md-5 animate__animated animate__fadeInRight">
+                    <div class="cycle-illustration">
+                        <div class="cycle-node animate__animated animate__zoomIn animate__delay-1s">1</div>
+                        <div class="cycle-node animate__animated animate__zoomIn animate__delay-2s">3</div>
+                        <div class="cycle-node animate__animated animate__zoomIn animate__delay-3s">4</div>
+                        <div class="cycle-node animate__animated animate__zoomIn animate__delay-4s">2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Algorithm Approaches -->
+    <div class="slide" id="slide4">
+        <div class="slide-content">
+            <h2><i class="fas fa-code-branch"></i> Initial Approach</h2>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="animate__animated animate__fadeIn">For each cycle, we identified two methods to sort it:</p>
+                    
+                    <div class="card mb-4 animate__animated animate__fadeInLeft">
+                        <div class="card-header bg-success text-white">
+                            <i class="fas fa-sync-alt"></i> Method 1: Internal Cycle Sorting
+                        </div>
+                        <div class="card-body">
+                            <p>Use the minimum element in the cycle as a "base" and swap other elements with it:</p>
+                            <ul>
+                                <li class="animate__animated animate__fadeInLeft animate__delay-1s">Identify the minimum element in the cycle</li>
+                                <li class="animate__animated animate__fadeInLeft animate__delay-1s">Swap it with each other element in the cycle</li>
+                                <li class="animate__animated animate__fadeInLeft animate__delay-2s">Cost = sum of all distances between the min element and others</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="card animate__animated animate__fadeInRight">
+                        <div class="card-header bg-primary text-white">
+                            <i class="fas fa-exchange-alt"></i> Method 2: Global Minimum Helper
+                        </div>
+                        <div class="card-body">
+                            <p>Sometimes using the global minimum value as a helper is cheaper:</p>
+                            <ul>
+                                <li class="animate__animated animate__fadeInRight animate__delay-1s">Use the global minimum as an intermediate element</li>
+                                <li class="animate__animated animate__fadeInRight animate__delay-1s">Requires additional swaps but might have lower total cost</li>
+                                <li class="animate__animated animate__fadeInRight animate__delay-2s">Especially useful when the cycle's minimum is far from other elements</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <p class="mt-4 animate__animated animate__fadeIn animate__delay-3s"><strong>Our solution:</strong> Calculate the cost of both methods for each cycle and pick the minimum.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Example Walkthrough -->
+    <div class="slide" id="slide5">
+        <div class="slide-content">
+            <h2><i class="fas fa-tasks"></i> Example Walkthrough: [3, 1, 4, 2]</h2>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="animate__animated animate__fadeIn"><strong>Initial Permutation:</strong> [3, 1, 4, 2]</p>
+                    <p class="animate__animated animate__fadeIn animate__delay-1s"><strong>Cycle:</strong> 1 → 3 → 4 → 2 → 1 (positions)</p>
+                    <p class="animate__animated animate__fadeIn animate__delay-1s"><strong>Values in cycle:</strong> 3, 4, 2, 1</p>
+                    <p class="animate__animated animate__fadeIn animate__delay-2s"><strong>Minimum value in cycle:</strong> 1 (at position 2)</p>
+                    
+                    <table class="table table-bordered cost-table animate__animated animate__fadeIn animate__delay-2s">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Method</th>
+                                <th>Swaps</th>
+                                <th>Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="animate__animated animate__fadeIn animate__delay-3s">
+                                <td><strong>Method 1:</strong><br>(Internal sorting)</td>
+                                <td>
+                                    Swap(2,1): |2-1| = 1<br>
+                                    Swap(1,3): |1-3| = 2<br>
+                                    Swap(3,4): |3-4| = 1
+                                </td>
+                                <td class="text-center">4</td>
+                            </tr>
+                            <tr class="animate__animated animate__fadeIn animate__delay-4s">
+                                <td><strong>Method 2:</strong><br>(Using global min)</td>
+                                <td>
+                                    Not needed as the cycle already contains the global minimum (1)
+                                </td>
+                                <td class="text-center">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <p class="animate__animated animate__fadeIn animate__delay-5s"><strong>Best solution:</strong> Method 1 with cost 4</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Solution Idea -->
+    <div class="slide" id="slide6">
+        <div class="slide-content">
+            <h2><i class="fas fa-puzzle-piece"></i> Solution Idea</h2>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="lead animate__animated animate__fadeIn">Our solution follows these key steps:</p>
+                    
+                    <ol class="mt-4">
+                        <li class="mb-3 animate__animated animate__fadeInLeft animate__delay-1s"><strong>Cycle Identification</strong> - Decompose the permutation into cycles by following elements to their correct positions</li>
+                        <li class="mb-3 animate__animated animate__fadeInLeft animate__delay-2s"><strong>Cost Calculation</strong> - For each cycle, calculate the cost of two methods:
+                            <ul>
+                                <li>Internal sorting with cycle's minimum element</li>
+                                <li>Using global minimum as a helper</li>
+                            </ul>
+                        </li>
+                        <li class="mb-3 animate__animated animate__fadeInLeft animate__delay-3s"><strong>Method Selection</strong> - Choose the method with minimum cost for each cycle</li>
+                        <li class="mb-3 animate__animated animate__fadeInLeft animate__delay-4s"><strong>Result</strong> - Sum up the costs of all cycles to get the final answer</li>
+                    </ol>
+                    
+                    <div class="alert alert-info mt-4 animate__animated animate__fadeIn animate__delay-4s">
+                        <p><strong><i class="fas fa-tachometer-alt"></i> Time & Space Complexity:</strong> O(N) - We process each element exactly once</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visualization -->
+    <div class="slide" id="slide7">
+        <div class="slide-content">
+            <h2><i class="fas fa-chart-bar"></i> Visualization Demo</h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="flip-card animate__animated animate__fadeInLeft">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                                        <i class="fas fa-desktop"></i> Interactive Visualization
+                        </div>
+                        <div class="card-body">
+                            <p>We've built an interactive tool to demonstrate the algorithm:</p>
+                            <ul>
+                                <li>Input any permutation</li>
+                                <li>See step-by-step swaps</li>
+                                <li>Track cost accumulation</li>
+                                <li>Visualize the sorting process</li>
+                            </ul>
+                            <p class="mt-4">The visualization helps understand how cycles work and why this approach is optimal.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3>Hover to see more!</h3>
+                                <p>Our interactive tool uses D3.js for animations and provides real-time cost calculation as you experiment with different permutations.</p>
+                                <p><i class="fas fa-code"></i> Try it out in our demo!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="flip-card animate__animated animate__fadeInRight">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                                        <i class="fas fa-cogs"></i> Implementation
+                        </div>
+                        <div class="card-body">
+                            <p>Our implementation includes:</p>
+                            <ul>
+                                <li>Core algorithm for optimal swap calculation</li>
+                                <li>Interactive web interface</li>
+                                <li>Step-by-step animation</li>
+                                <li>Cost tracking and verification</li>
+                            </ul>
+                            <p class="mt-4">We've optimized for both performance and educational value.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3>Technical Details</h3>
+                                <p>Our implementation achieves O(N) time complexity and uses efficient data structures to track cycle components.</p>
+                                <p><i class="fas fa-check-circle"></i> Verified with extensive test cases!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Implementation App Slide (NEW) -->
+    <div class="slide" id="slide8">
+        <div class="slide-content">
+            <h2><i class="fas fa-mobile-alt"></i> Implementation in Our App</h2>
+            
+            <div class="row">
+                <div class="col-md-6 animate__animated animate__fadeInLeft">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <i class="fas fa-code"></i> App Architecture
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Our permutation visualizer app includes:</strong></p>
+                            <ul>
+                                <li class="animate__animated animate__fadeInLeft animate__delay-1s"><i class="fas fa-layer-group"></i> <strong>Frontend:</strong> React.js with TypeScript</li>
+                                <li class="animate__animated animate__fadeInLeft animate__delay-1s"><i class="fas fa-server"></i> <strong>Backend:</strong> Node.js API for complex calculations</li>
+                                <li class="animate__animated animate__fadeInLeft animate__delay-2s"><i class="fas fa-database"></i> <strong>Storage:</strong> MongoDB for saving puzzle configurations</li>
+                                <li class="animate__animated animate__fadeInLeft animate__delay-2s"><i class="fas fa-chart-line"></i> <strong>Visualizations:</strong> D3.js for dynamic animations</li>
+                            </ul>
+                            <p class="mt-3 animate__animated animate__fadeInUp animate__delay-3s">The app is deployed on cloud infrastructure for high availability and performance.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 animate__animated animate__fadeInRight">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <i class="fas fa-puzzle-piece"></i> App Features
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center mb-4">
+                                <img src="https://via.placeholder.com/350x200?text=App+Interface" alt="App Interface Mockup" class="img-fluid rounded shadow" style="max-width: 100%; height: auto;">
+                            </div>
+                            <ul>
+                                <li class="animate__animated animate__fadeInRight animate__delay-1s"><i class="fas fa-random"></i> Generate random permutations or input custom ones</li>
+                                <li class="animate__animated animate__fadeInRight animate__delay-1s"><i class="fas fa-eye"></i> Visualize cycle decomposition in real-time</li>
+                                <li class="animate__animated animate__fadeInRight animate__delay-2s"><i class="fas fa-film"></i> Step-by-step animation of the sorting process</li>
+                                <li class="animate__animated animate__fadeInRight animate__delay-2s"><i class="fas fa-trophy"></i> Challenge mode with scoring based on optimization</li>
+                                <li class="animate__animated animate__fadeInRight animate__delay-3s"><i class="fas fa-share-alt"></i> Share puzzles and solutions with others</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12 animate__animated animate__fadeIn animate__delay-3s">
+                    <div class="alert alert-primary">
+                        <i class="fas fa-rocket"></i> <strong>Coming Soon:</strong> Our app will be available on web, iOS, and Android platforms. Stay tuned for the launch in Q2 2023!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Visualization Application (NEW) -->
+    <div class="slide" id="slide9">
+        <div class="slide-content">
+            <h2><i class="fas fa-paint-brush"></i> Visualization Application Details</h2>
+            
+            <div class="row mb-4">
+                <div class="col-12 animate__animated animate__fadeIn">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <i class="fas fa-desktop"></i> Interactive Visualizer - Core Components
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <h5 class="animate__animated animate__fadeInLeft"><i class="fas fa-cubes"></i> Main Visualization Elements</h5>
+                                    <ul class="animate__animated animate__fadeInLeft animate__delay-1s">
+                                        <li><strong>Permutation Array Display:</strong> Interactive blocks representing array elements that can be dragged to manually create permutations</li>
+                                        <li><strong>Cycle View:</strong> Graphical representation of cycles with color-coded paths showing element relationships</li>
+                                        <li><strong>Cost Calculator:</strong> Real-time display of current cost and optimal solution path</li>
+                                        <li><strong>Animation Controls:</strong> Play, pause, step forward/backward, and speed adjustment for visualizations</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="example-blocks animate__animated animate__fadeInRight animate__delay-1s" style="margin-top: 20px;">
+                                        <div class="example-block" style="background-color: #ff7043;" data-pos="Position 1">5</div>
+                                        <div class="example-block" style="background-color: #42a5f5;" data-pos="Position 2">1</div>
+                                        <div class="example-block" style="background-color: #66bb6a;" data-pos="Position 3">4</div>
+                                        <div class="example-block" style="background-color: #ab47bc;" data-pos="Position 4">2</div>
+                                        <div class="example-block" style="background-color: #ffa726;" data-pos="Position 5">3</div>
+                                    </div>
+                                    <p class="text-center mt-3 animate__animated animate__fadeIn animate__delay-2s">Interactive array visualization</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 animate__animated animate__fadeInLeft animate__delay-2s">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <i class="fas fa-cogs"></i> Technical Implementation
+                        </div>
+                        <div class="card-body">
+                            <h5><i class="fas fa-bolt"></i> Algorithm Visualization</h5>
+                            <ul>
+                                <li><strong>Cycle Detection:</strong> Implemented using depth-first traversal to identify all cycles in O(n) time</li>
+                                <li><strong>Animation Engine:</strong> Custom-built using requestAnimationFrame for smooth 60fps transitions</li>
+                                <li><strong>Cost Calculation:</strong> Real-time computation of both methods (internal cycle sorting and global minimum helper)</li>
+                                <li><strong>Memory Optimization:</strong> Efficient data structures to handle permutations of up to 1000 elements</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 animate__animated animate__fadeInRight animate__delay-2s">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <i class="fas fa-user-graduate"></i> Educational Features
+                        </div>
+                        <div class="card-body">
+                            <h5><i class="fas fa-chalkboard-teacher"></i> Learning Tools</h5>
+                            <ul>
+                                <li><strong>Tutorial Mode:</strong> Step-by-step guide with explanations of the algorithm's concepts</li>
+                                <li><strong>Insight Panels:</strong> Contextual information about the current state and decision-making process</li>
+                                <li><strong>Complexity Analysis:</strong> Visual representation of algorithm efficiency as permutation size increases</li>
+                                <li><strong>Challenge Levels:</strong> Progressively difficult permutations to solve, with hints available</li>
+                                <li><strong>Export Functionality:</strong> Save visualizations as animations or static images for presentations</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12 animate__animated animate__fadeIn animate__delay-3s">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-lightbulb"></i> <strong>Try it Now:</strong> A beta version of our visualization tool is available at <a href="#" class="alert-link">permutation-viz.team73.dev</a> - Scan the QR code on your way out!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applications -->
+    <div class="slide" id="slide10">
+        <div class="slide-content">
+            <h2><i class="fas fa-briefcase"></i> Real-world Applications</h2>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card h-100 animate__animated animate__fadeInLeft">
+                        <div class="card-header bg-primary text-white">
+                            <i class="fas fa-warehouse"></i> Logistics
+                        </div>
+                        <div class="card-body">
+                            <p>Optimizing the rearrangement of items in a warehouse:</p>
+                            <ul>
+                                <li class="animate__animated animate__fadeInLeft animate__delay-1s">Items in wrong locations</li>
+                                <li class="animate__animated animate__fadeInLeft animate__delay-1s">Movement costs proportional to distance</li>
+                                <li class="animate__animated animate__fadeInLeft animate__delay-2s">Need to minimize total movement cost</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 animate__animated animate__fadeInUp">
+                        <div class="card-header bg-success text-white">
+                            <i class="fas fa-robot"></i> Robotics
+                        </div>
+                        <div class="card-body">
+                            <p>Efficient motion planning for robotic arms:</p>
+                            <ul>
+                                <li class="animate__animated animate__fadeInUp animate__delay-1s">Objects need to be arranged in specific order</li>
+                                <li class="animate__animated animate__fadeInUp animate__delay-1s">Arm movement has energy/time cost</li>
+                                <li class="animate__animated animate__fadeInUp animate__delay-2s">Minimize total energy consumption</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 animate__animated animate__fadeInRight">
+                        <div class="card-header bg-info text-white">
+                            <i class="fas fa-graduation-cap"></i> Education
+                        </div>
+                        <div class="card-body">
+                            <p>Teaching optimization algorithms:</p>
+                            <ul>
+                                <li class="animate__animated animate__fadeInRight animate__delay-1s">Visual way to understand permutations</li>
+                                <li class="animate__animated animate__fadeInRight animate__delay-1s">Demonstrates cycle decomposition</li>
+                                <li class="animate__animated animate__fadeInRight animate__delay-2s">Shows cost optimization in action</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conclusion -->
+    <div class="slide" id="slide11">
+        <div class="slide-content">
+            <h2><i class="fas fa-flag-checkered"></i> Conclusion</h2>
+            
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <p class="lead animate__animated animate__fadeIn">The Perfect Permutation solver demonstrates:</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="card h-100 animate__animated animate__zoomIn">
+                                <div class="card-body">
+                                    <h3 class="animated-emoji">🧠</h3>
+                                    <h5>Algorithmic Thinking</h5>
+                                    <p>Using cycle decomposition to break down a complex problem</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 animate__animated animate__zoomIn animate__delay-1s">
+                                <div class="card-body">
+                                    <h3 class="animated-emoji">📊</h3>
+                                    <h5>Optimization</h5>
+                                    <p>Finding minimum cost solutions through careful analysis</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 animate__animated animate__zoomIn animate__delay-2s">
+                                <div class="card-body">
+                                    <h3 class="animated-emoji">👁️</h3>
+                                    <h5>Visualization</h5>
+                                    <p>Making abstract concepts concrete through interactive demos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="mt-5 problem-id animate__animated animate__fadeIn animate__delay-3s">Problem ID: BLA 106C-05 | Team 73</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="controls">
+        <button id="prevBtn"><i class="fas fa-arrow-left"></i></button>
+        <button id="nextBtn"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    
+    <div class="slide-number">Slide <span id="currentSlide">1</span> / <span id="totalSlides">11</span></div>
+
+    <!-- Particle.js -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <!-- Animate.css -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize particles
+            particlesJS('particles-js', {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#4caf50"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        },
+                        "polygon": {
+                            "nb_sides": 5
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.3,
+                        "random": false,
+                        "anim": {
+                            "enable": false,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true,
+                        "anim": {
+                            "enable": false,
+                            "speed": 40,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#4caf50",
+                        "opacity": 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 2,
+                        "direction": "none",
+                        "random": false,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": false,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 140,
+                            "line_linked": {
+                                "opacity": 1
+                            }
+                        },
+                        "bubble": {
+                            "distance": 400,
+                            "size": 40,
+                            "duration": 2,
+                            "opacity": 8,
+                            "speed": 3
+                        },
+                        "repulse": {
+                            "distance": 200,
+                            "duration": 0.4
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        },
+                        "remove": {
+                            "particles_nb": 2
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+        
+            // Get all slides
+            const slides = document.querySelectorAll('.slide');
+            const totalSlides = slides.length;
+            
+            // Update total slides display
+            document.getElementById('totalSlides').textContent = totalSlides;
+            
+            // Track current slide
+            let currentSlideIndex = 0;
+            
+            // Get control buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            // Progress bar
+            const progressBar = document.getElementById('progressBar');
+            
+            // Function to update progress bar
+            function updateProgressBar() {
+                const progress = ((currentSlideIndex + 1) / totalSlides) * 100;
+                progressBar.style.width = progress + '%';
+            }
+            
+            // Function to show slide with animation
+            function showSlide(index, direction = 'next') {
+                // Apply exit animation to current slide
+                if (slides[currentSlideIndex]) {
+                    if (direction === 'next') {
+                        slides[currentSlideIndex].classList.add('slide-exit');
+                    } else {
+                        slides[currentSlideIndex].classList.add('slide-enter');
+                    }
+                    
+                    // Remove active class after animation
+                    setTimeout(() => {
+                        slides[currentSlideIndex].classList.remove('active');
+                        slides[currentSlideIndex].classList.remove('slide-exit');
+                        slides[currentSlideIndex].classList.remove('slide-enter');
+                    }, 300);
+                }
+                
+                // Apply enter animation to new slide
+                setTimeout(() => {
+                // Hide all slides
+                slides.forEach(slide => {
+                    slide.classList.remove('active');
+                });
+                    
+                    // Prepare new slide for animation
+                    if (direction === 'next') {
+                        slides[index].classList.add('slide-enter');
+                    } else {
+                        slides[index].classList.add('slide-exit');
+                    }
+                
+                // Show the selected slide
+                slides[index].classList.add('active');
+                    
+                    // Remove animation class after transition
+                    setTimeout(() => {
+                        slides[index].classList.remove('slide-enter');
+                        slides[index].classList.remove('slide-exit');
+                        
+                        // Reset animations for elements in the slide
+                        resetAnimations(slides[index]);
+                    }, 300);
+                
+                // Update current slide display
+                document.getElementById('currentSlide').textContent = index + 1;
+                    
+                    // Update progress bar
+                    updateProgressBar();
+                
+                // Update button states
+                prevBtn.style.opacity = index === 0 ? '0.5' : '1';
+                nextBtn.style.opacity = index === totalSlides - 1 ? '0.5' : '1';
+                    
+                    // Update current slide index
+                    currentSlideIndex = index;
+                }, 300);
+            }
+            
+            // Reset animations for elements in a slide
+            function resetAnimations(slide) {
+                const animatedElements = slide.querySelectorAll('.animate__animated');
+                animatedElements.forEach(element => {
+                    // Get the animation classes
+                    const animationClasses = Array.from(element.classList)
+                        .filter(className => className.startsWith('animate__') && className !== 'animate__animated');
+                    
+                    // Remove animation classes
+                    animationClasses.forEach(className => {
+                        element.classList.remove(className);
+                    });
+                    
+                    // Force reflow
+                    void element.offsetWidth;
+                    
+                    // Re-add animation classes
+                    animationClasses.forEach(className => {
+                        element.classList.add(className);
+                    });
+                });
+            }
+            
+            // Button event listeners
+            prevBtn.addEventListener('click', function() {
+                if (currentSlideIndex > 0) {
+                    showSlide(currentSlideIndex - 1, 'prev');
+                }
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                if (currentSlideIndex < totalSlides - 1) {
+                    showSlide(currentSlideIndex + 1, 'next');
+                }
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
+                } else if (e.key === 'ArrowRight' || e.key === ' ') {
+                    nextBtn.click();
+                }
+            });
+            
+            // Theme toggle
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+            
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-theme');
+                
+                if (body.classList.contains('dark-theme')) {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            });
+            
+            // Swipe navigation for touch devices
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            document.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, false);
+            
+            document.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, false);
+            
+            function handleSwipe() {
+                const threshold = 100; // Minimum distance for swipe
+                
+                if (touchEndX - touchStartX > threshold) {
+                    // Swiped right, go to previous slide
+                    prevBtn.click();
+                } else if (touchStartX - touchEndX > threshold) {
+                    // Swiped left, go to next slide
+                    nextBtn.click();
+                }
+            }
+            
+            // Initialize first slide with progress bar
+            updateProgressBar();
+            showSlide(currentSlideIndex);
+            
+            // Add some interactive effects
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px)';
+                    this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.2)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                });
+            });
+            
+            // Create animated cycle lines (connections between nodes)
+            const cycleIllustration = document.querySelector('.cycle-illustration');
+            if (cycleIllustration) {
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("width", "100%");
+                svg.setAttribute("height", "100%");
+                svg.style.position = "absolute";
+                svg.style.top = "0";
+                svg.style.left = "0";
+                
+                const nodes = cycleIllustration.querySelectorAll('.cycle-node');
+                
+                for (let i = 0; i < nodes.length; i++) {
+                    const current = nodes[i];
+                    const next = nodes[(i + 1) % nodes.length];
+                    
+                    // Get center positions
+                    const currentRect = current.getBoundingClientRect();
+                    const nextRect = next.getBoundingClientRect();
+                    const cycleRect = cycleIllustration.getBoundingClientRect();
+                    
+                    // Calculate relative positions
+                    const x1 = currentRect.left + currentRect.width/2 - cycleRect.left;
+                    const y1 = currentRect.top + currentRect.height/2 - cycleRect.top;
+                    const x2 = nextRect.left + nextRect.width/2 - cycleRect.left;
+                    const y2 = nextRect.top + nextRect.height/2 - cycleRect.top;
+                    
+                    // Create line
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", x1);
+                    line.setAttribute("y1", y1);
+                    line.setAttribute("x2", x2);
+                    line.setAttribute("y2", y2);
+                    line.setAttribute("stroke", "#4caf50");
+                    line.setAttribute("stroke-width", "2");
+                    line.setAttribute("stroke-dasharray", "5,5");
+                    line.style.animation = "dash 20s linear infinite";
+                    
+                    svg.appendChild(line);
+                }
+                
+                // Add animation for dash
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes dash {
+                        to {
+                            stroke-dashoffset: 1000;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                cycleIllustration.appendChild(svg);
+            }
+        });
+    </script>
+</body>
+</html> 
